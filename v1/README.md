@@ -1,4 +1,4 @@
-# TodoList
+# Star todo list version 1
 
 # bun + vite + Vue3
 
