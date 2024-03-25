@@ -1,0 +1,1 @@
+export const isCompleted = (msgBool: boolean, msg1: string, msg2: string) => msgBool ? msg1 : msg2 
