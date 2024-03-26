@@ -4,7 +4,6 @@ import { onMounted, ref } from 'vue';
 const leftMenu = ref<HTMLUListElement>();
 const rightMenu = ref<HTMLUListElement>();
 const star_but = ref<HTMLDivElement>();
-const add = ref<HTMLLIElement>();
 
 const openMenu = () => {
     star_but.value!.style.transform = star_but.value!.style.transform === 'rotate(45deg)' ? 'rotate(0deg)' : 'rotate(45deg)';
@@ -21,7 +20,6 @@ onMounted(() => {
     leftMenu.value = document.querySelector('.left-menu') as HTMLUListElement;
     rightMenu.value = document.querySelector('.right-menu') as HTMLUListElement;
     star_but.value = document.querySelector('.star_but') as HTMLDivElement;
-    add.value = document.querySelector('.add') as HTMLLIElement;
 })
 
 </script>
@@ -30,10 +28,10 @@ onMounted(() => {
     <div class="footer">
         <div class="content">
             <ul class="left-menu">
-                <li class="add">
+                <li>
                     新增待办
                 </li>
-                <li class="edit">
+                <li>
                     修改待办
                 </li>
             </ul>
