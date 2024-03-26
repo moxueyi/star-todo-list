@@ -4,17 +4,24 @@ import { onMounted, ref } from 'vue';
 const leftMenu = ref<HTMLUListElement>();
 const rightMenu = ref<HTMLUListElement>();
 const star_but = ref<HTMLDivElement>();
+const add = ref<HTMLLIElement>();
 
 const openMenu = () => {
-    leftMenu.value!.style.display = leftMenu.value!.style.display === 'none' || leftMenu.value!.style.display === '' ? 'flex' : '';
-    rightMenu.value!.style.display = rightMenu.value!.style.display === 'none' || rightMenu.value!.style.display === '' ? 'flex' : '';
     star_but.value!.style.transform = star_but.value!.style.transform === 'rotate(45deg)' ? 'rotate(0deg)' : 'rotate(45deg)';
+    if (leftMenu.value!.classList.length < 2) {
+        leftMenu.value!.classList.add('left-menu-hidden');
+        rightMenu.value!.classList.add('right-menu-hidden');
+    } else {
+        leftMenu.value!.classList.remove('left-menu-hidden');
+        rightMenu.value!.classList.remove('right-menu-hidden');
+    }
 }
 
 onMounted(() => {
     leftMenu.value = document.querySelector('.left-menu') as HTMLUListElement;
     rightMenu.value = document.querySelector('.right-menu') as HTMLUListElement;
     star_but.value = document.querySelector('.star_but') as HTMLDivElement;
+    add.value = document.querySelector('.add') as HTMLLIElement;
 })
 
 </script>
@@ -23,11 +30,11 @@ onMounted(() => {
     <div class="footer">
         <div class="content">
             <ul class="left-menu">
-                <li>
-                    <div>新增待办</div>
+                <li class="add">
+                    新增待办
                 </li>
-                <li>
-                    <div>修改待办</div>
+                <li class="edit">
+                    修改待办
                 </li>
             </ul>
             <div class="switch" @click="openMenu">
@@ -35,10 +42,10 @@ onMounted(() => {
             </div>
             <ul class="right-menu">
                 <li>
-                    <div>完成/重做</div>
+                    完成/重做
                 </li>
                 <li>
-                    <div>删除勾选</div>
+                    删除勾选
                 </li>
             </ul>
         </div>
@@ -53,7 +60,7 @@ onMounted(() => {
 .right-menu {
     display: flex;
     flex-direction: row;
-    justify-content: space-evenly;
+    justify-content: space-around;
     align-items: center;
     height: 10dvh;
 }
@@ -62,8 +69,21 @@ onMounted(() => {
     position: absolute;
     width: 100%;
 
+    .left-menu-hidden {
+        transform: translateX(-100dvw);
+    }
+
+    .right-menu-hidden {
+        transform: translateX(100dvw);
+    }
+
     @media screen and (min-width: 768px) {
         width: 70%;
+
+        .left-menu-hidden,
+        .right-menu-hidden {
+            transform: none;
+        }
     }
 }
 
@@ -72,6 +92,7 @@ onMounted(() => {
     width: 100dvw;
     background-color: rgba(255, 255, 255, 0.3);
     backdrop-filter: blur(3px);
+    overflow: hidden;
 }
 
 // 切换按钮样式和布局
@@ -94,7 +115,7 @@ onMounted(() => {
         height: 3dvh;
         margin: 2dvh 0 0 1dvh;
         user-select: none;
-        transition: transform 0.4s;
+        transition: transform 0.3s ease-in;
     }
 
     &:hover {
@@ -169,23 +190,17 @@ onMounted(() => {
     flex: 1;
     white-space: nowrap;
     z-index: 1;
+    transition: transform 0.3s;
 
     >li {
-        width: 100%;
-        height: 100%;
+
         display: grid;
         place-items: center;
 
-        >div {
-            padding: 0.8dvw;
-            border-radius: 4px;
-            font-size: 1.5dvb;
-            cursor: pointer;
-        }
-    }
-
-    @media screen and (max-width: 768px) {
-        display: none;
+        padding: 0.8dvw;
+        border-radius: 4px;
+        font-size: 1.5dvb;
+        cursor: pointer;
     }
 }
 
@@ -193,7 +208,7 @@ onMounted(() => {
 .left-menu {
     color: #fff;
 
-    >:first-child div {
+    >:first-child {
         color: #46385C;
         background-color: rgba(63, 196, 50, 0.8);
         transition: background-color 0.3s, color 0.3s;
@@ -209,7 +224,7 @@ onMounted(() => {
         }
     }
 
-    >:last-child div {
+    >:last-child {
         color: #fff;
         background-color: rgba(133, 96, 210, 0.8);
         transition: background-color 0.3s, color 0.3s;
@@ -226,9 +241,10 @@ onMounted(() => {
 
     }
 }
+
 .right-menu {
 
-    >:first-child div {
+    >:first-child {
         color: #46385C;
 
         background-color: rgba(94, 132, 239, 0.8);
@@ -245,7 +261,7 @@ onMounted(() => {
         }
     }
 
-    >:last-child div {
+    >:last-child {
         color: #fff;
         background-color: rgba(255, 0, 170, 0.8);
         transition: background-color 0.3s, color 0.3s;
