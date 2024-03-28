@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { useTodoList } from '../stores';
+import { useTodoList, useCheckedList } from '../stores';
 import { TodoType } from '../stores/TodoList/todoType';
 import { isCompleted } from '../stores/utiles/isComplete';
 
 const todoStore = useTodoList();
+const checkedStore = useCheckedList();
 
 const props = defineProps<{
     backFont: string,
@@ -30,7 +31,8 @@ const emit = defineEmits<{
                     </button>
                     <button class="card-item-delete" type="button"
                         @click="emit('deleteTodo', todoStore.deleteTodo, item.id, item.completed)">删除</button>
-                    <input class="card-item-checkbox" type="checkbox" @click="emit('pushId', item.id)">
+                    <input class="card-item-checkbox" type="checkbox" :checked="checkedStore.includeID(item.id)"
+                        @click="emit('pushId', item.id)">
                 </div>
             </div>
         </div>

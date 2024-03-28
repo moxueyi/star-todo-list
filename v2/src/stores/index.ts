@@ -1,3 +1,4 @@
 import { useTodoList } from "./TodoList/todoList";
+import { useCheckedList } from "./checkedList"
 
-export { useTodoList };
+export { useTodoList, useCheckedList };

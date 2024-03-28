@@ -27,11 +27,13 @@ export const useTodoList = defineStore('todoList', () => {
     }
 
     // 修改一个todo
-    function updateTodo(id: string, title: string) {
+    async function updateTodo(id: string, title: string): Promise<boolean> {
         const todo = todoList.value.find(todo => todo.id === id);
         if (todo) {
             todo.title = title;
+            return true;
         }
+        return false;
     }
 
     // 切换一个todo的完成状态

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { h, onMounted, ref, watch } from 'vue';
-import Header from './components/Header.vue';
-import Footer from './components/Footer.vue';
+import MyHeader from './components/Header.vue';
+import MyFooter from './components/Footer.vue';
 import { useRoute, useRouter } from 'vue-router';
 // import notifyMe from './stores/utiles/notify';
 import { ElMessage } from 'element-plus'
@@ -11,7 +11,11 @@ const route = useRoute();
 
 const home = ref<HTMLDivElement>();
 const about = ref<HTMLDivElement>();
-
+type menu = { menu1: string, menu2: string };
+const footer = ref<{ leftMenu: menu, rightMenu: menu }>({
+    leftMenu: { menu1: '新增待办', menu2: '修改待办' },
+    rightMenu: { menu1: '完成/重做勾选', menu2: '删除勾选' }
+});
 const changeActive = (path: string) => {
     if (path === '/') {
         home.value!.classList.remove('inactive')
@@ -51,7 +55,7 @@ watch(() => route.path, (newPath) => {
 
 <template>
     <div class="container">
-        <Header :title="'Star Todo List'" #nav-item>
+        <MyHeader :title="'Star Todo List'" #nav-item>
             <div class="nav-item" ref="home" @click="navigatorTo('/')">
                 <img class="nav-icon" src="./assets/home.svg" alt="">
                 Home
@@ -60,12 +64,13 @@ watch(() => route.path, (newPath) => {
                 <img class="nav-icon" src="./assets/about.svg" alt="">
                 About
             </div>
-        </Header>
+        </MyHeader>
         <main>
             <router-view></router-view>
         </main>
 
-        <Footer></Footer>
+        <MyFooter :left-menu="footer.leftMenu" :right-menu="footer.rightMenu">
+        </MyFooter>
     </div>
 </template>
 
@@ -94,17 +99,6 @@ watch(() => route.path, (newPath) => {
         font-size: 3dvb;
         color: #ec74ea;
     }
-}
-
-header {
-    display: grid;
-    align-items: center;
-    grid-template-columns: 1fr 1fr;
-
-    background-color: rgba(255, 255, 255, 0.3);
-    backdrop-filter: blur(3px);
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
-
 }
 
 .nav-icon {
