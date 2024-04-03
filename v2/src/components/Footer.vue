@@ -39,7 +39,7 @@ const editList = ref<TodoType[]>([]);
 
 const openWindow = (title: string) => {
     // console.log(title);
-    if (title === props.leftMenu.menu2 && checkedStore.checkedList.length === 0) {
+    if (title !== props.leftMenu.menu1 && checkedStore.checkedList.length === 0) {
         ElMessage({
             type: 'error',
             showClose: true,
@@ -53,7 +53,7 @@ const openWindow = (title: string) => {
     dialogTitle.value = title;
 
     if (title === props.leftMenu.menu2) {
-        todoStore.todoList.forEach(todo => {
+        todoStore.getTodoList().forEach(todo => {
             if (checkedStore.includeID(todo.id)) {
                 const todos = editList.value.filter(item => item.id === todo.id);
                 if (todos.length === 0) {
@@ -74,61 +74,156 @@ const clearInput = () => {
 }
 
 const handleAddTodo = () => {
+    if (input.value === '') {
+        ElMessage({
+            type: 'error',
+            showClose: true,
+            duration: 5000,
+            message: '内容是空的哦，至少写一个字吧，前辈（无奈）',
+        })
+        return;
+    }
+
     todoStore.addTodo(input.value);
     clearInput();
+
+    ElMessage({
+        type: 'success',
+        showClose: true,
+        duration: 5000,
+        message: '已经纳入代办事项啦！',
+    })
 }
 
 const handleEditTodo = () => {
+    let allChange: boolean = true;
     // console.log('handle');
     editList.value.forEach(async item => {
-        await todoStore.updateTodo(item.id, item.title);
+        if (todoStore.isTitleChange(item.id, item.title)) {
+            await todoStore.updateTodo(item.id, item.title);
+        } else {
+            allChange = false;
+        }
     })
 
     dialogVisible.value = false;
     editList.value = [];
+
+    ElMessage({
+        type: 'success',
+        showClose: true,
+        duration: 5000,
+        message: allChange ? '已经统一修改咯！' : '有些没有改变哦，因为前辈没有修改它们。',
+    })
 }
 const clearEditItem = (index: number) => {
     editList.value[index].title = '';
 }
 const enterEditItem = (index: number, id: string) => {
     todoStore.updateTodo(id, editList.value[index].title);
+
+    ElMessage({
+        type: 'success',
+        showClose: true,
+        duration: 5000,
+        message: '这项工作会为前辈调整。',
+    })
+
+    if (editList.value[index].title === '') {
+        ElMessage({
+            type: 'error',
+            showClose: true,
+            duration: 5000,
+            message: '咦，内容怎么是空的？前~辈（叉腰）',
+        })
+    }
 }
+
+const removeAllChecked = () => {
+    checkedStore.removeAll();
+    dialogVisible.value = false;
+
+    ElMessage({
+        type: 'success',
+        showClose: true,
+        duration: 5000,
+        message: '勾选已经为前辈擦掉了，要好好做哦！',
+    })
+}
+
+const changeTodoList = (backFunc: Function, status?: boolean) => {
+    if (status) {
+        todoStore.getTodoList().forEach(item => {
+            if (checkedStore.includeID(item.id) && item.completed === status) {
+                backFunc(item.id)
+                if (backFunc === todoStore.deleteTodo) {
+                    checkedStore.removeID(item.id);
+                }
+            }
+        })
+    } else {
+
+        todoStore.getTodoList().forEach(item => {
+            if (checkedStore.includeID(item.id)) {
+                backFunc(item.id)
+            }
+        });
+
+        if (backFunc === todoStore.deleteTodo) {
+            checkedStore.removeAll();
+        }
+    }
+
+    dialogVisible.value = false;
+
+    ElMessage({
+        type: 'success',
+        showClose: true,
+        duration: 5000,
+        message: '前辈这些工作调整了，注意查看哦。',
+    })
+}
+
 </script>
 
 <template>
     <MyDialog v-model:dialog-visible="dialogVisible" :dialog-title="dialogTitle">
         <template #content>
             <div class="dialog-add" v-if="dialogTitle === props.leftMenu.menu1">
-                <el-input v-model="input" style="width: 100%; height: 100%;" placeholder="请输入代办事项"
-                    @keydown.enter="handleAddTodo" />
+                <el-input v-model="input" style="width: 100%;" placeholder="请输入代办事项" @keydown.enter="handleAddTodo" />
                 <div class="clear" @click="clearInput">清空</div>
             </div>
             <div class="dialog-edit" v-if="dialogTitle === props.leftMenu.menu2">
                 <div class="dialog-edit-item" v-for="item, index in editList" :key="item.id">
-                    <el-input v-model="item.title" style="width: 100%; height: 100%;" placeholder="请输入代办事项" />
+                    <el-input v-model="item.title" style="width: 100%;" placeholder="请输入代办事项"
+                        @keydown.enter="enterEditItem(index, item.id)" />
                     <div class="clear" @click="clearEditItem(index)">清空</div>
                     <div class="enter" @click="enterEditItem(index, item.id)">提交</div>
                 </div>
             </div>
-            <div v-else-if="dialogTitle === props.rightMenu.menu1">
-                {{ props.rightMenu.menu1 }}
+            <div class="dialog-change-todo" v-else-if="dialogTitle === props.rightMenu.menu1">
+                <div class="checklist" @click="removeAllChecked">仅取消勾选不改变项</div>
+                <div @click="changeTodoList(todoStore.toggleTodo, false)">将Pending勾选项都完成</div>
+                <div @click="changeTodoList(todoStore.toggleTodo, true)">将Completed勾选项都重做</div>
             </div>
-            <div v-else-if="dialogTitle === props.rightMenu.menu2">
-                {{ props.rightMenu.menu2 }}
+            <div class="dialog-todo-delete" v-else-if="dialogTitle === props.rightMenu.menu2">
+                <div class="checklist" @click="removeAllChecked">仅取消勾选不删除项</div>
+                <div @click="changeTodoList(todoStore.deleteTodo, false)">删除Pending中的勾选项</div>
+                <div @click="changeTodoList(todoStore.deleteTodo, true)">删除Completed中的勾选项</div>
             </div>
         </template>
         <template #footer>
-            <div class="dialog-footer" v-if="dialogTitle === props.leftMenu.menu1">
+            <div v-if="dialogTitle === props.leftMenu.menu1">
                 <div class="enter" @click="handleAddTodo">添加（Enter）</div>
             </div>
             <div v-else-if="dialogTitle === props.leftMenu.menu2">
                 <div class="enter" @click="handleEditTodo">统一提交</div>
             </div>
             <div v-else-if="dialogTitle === props.rightMenu.menu1">
-                {{ props.rightMenu.menu1 }}
+                <div class="enter" @click="changeTodoList(todoStore.toggleTodo)">混合更改勾选</div>
             </div>
             <div v-else-if="dialogTitle === props.rightMenu.menu2">
-                {{ props.rightMenu.menu2 }}
+                <div class="enter" @click="changeTodoList(todoStore.deleteTodo)">混合删除勾选</div>
             </div>
         </template>
     </MyDialog>
@@ -302,7 +397,13 @@ const enterEditItem = (index: number, id: string) => {
         display: grid;
         place-items: center;
 
-        padding: 0.8dvw;
+
+        padding: 1dvw;
+
+        @media screen and (max-width: 768px) {
+            padding: 2dvw;
+        }
+
         border-radius: 4px;
         font-size: 1.5dvb;
         cursor: pointer;
@@ -315,17 +416,17 @@ const enterEditItem = (index: number, id: string) => {
 
     >:first-child {
         color: #46385C;
-        background-color: rgba(63, 196, 50, 0.8);
+        background-color: rgba(239, 147, 94, 0.8);
         transition: background-color 0.3s, color 0.3s;
 
         &:hover {
             color: #fff;
-            background-color: rgba(132, 243, 122, 0.8);
+            background-color: rgba(238, 167, 126, 0.8);
         }
 
         &:active {
             color: #46385C;
-            background-color: rgba(63, 196, 50, 1);
+            background-color: rgba(239, 147, 94, 1);
         }
     }
 
@@ -400,8 +501,10 @@ const enterEditItem = (index: number, id: string) => {
     place-items: center;
     border-radius: 4px;
     font-size: 2dvh;
-    height: 100%;
-    padding: 2px 1dvh 2px 1dvh;
+    height: 5dvh;
+    line-height: 5dvh;
+    padding-left: 1dvh;
+    padding-right: 1dvh;
     cursor: pointer;
     user-select: none;
     transition: background-color 0.3s, color 0.3s;
@@ -449,6 +552,133 @@ const enterEditItem = (index: number, id: string) => {
         display: flex;
         flex-direction: row;
         gap: 2dvh;
+    }
+}
+
+.dialog-add :deep(.el-input),
+.dialog-edit :deep(.el-input) {
+    height: 5dvh;
+}
+
+.dialog-change-todo,
+.dialog-todo-delete {
+    display: flex;
+
+    width: 50%;
+
+    @media screen and (max-width: 768px) {
+        width: 100%;
+    }
+
+    @media screen and (max-width: 1000px) {
+        width: 80%;
+    }
+
+    flex-direction: column;
+
+    margin: 0 auto;
+
+    justify-content: space-between;
+    gap: 2dvh;
+    white-space: nowrap;
+
+    div {
+        justify-self: center;
+        align-self: center;
+        height: 5dvh;
+        width: 100%;
+        line-height: 5dvh;
+        text-align: center;
+        border-radius: 4px;
+        font-size: 2dvh;
+        height: 5dvh;
+        line-height: 5dvh;
+        padding-left: 1dvh;
+        padding-right: 1dvh;
+        cursor: pointer;
+        user-select: none;
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+}
+
+.dialog-change-todo {
+    :nth-child(2) {
+        color: #46385C;
+        background-color: rgba(239, 147, 94, 0.8);
+
+        &:hover {
+            color: #fff;
+            background-color: rgba(238, 167, 126, 0.8);
+        }
+
+        &:active {
+            color: #46385C;
+            background-color: rgba(239, 147, 94, 1);
+        }
+    }
+
+    :last-child {
+        color: #46385C;
+        background-color: rgba(25, 174, 233, 0.8);
+
+        &:hover {
+            color: #fff;
+            background-color: rgba(99, 192, 230, 0.8);
+        }
+
+        &:active {
+            color: #46385C;
+            background-color: rgba(25, 174, 233, 1);
+        }
+    }
+}
+
+.dialog-todo-delete {
+
+    :nth-child(2) {
+        color: #fff;
+        background-color: rgba(231, 59, 59, 0.8);
+
+        &:hover {
+            color: #46385C;
+            background-color: rgba(224, 111, 111, 0.8);
+        }
+
+        &:active {
+            color: #fff;
+            background-color: rgba(231, 59, 59, 1);
+        }
+    }
+
+    :last-child {
+        color: #fff;
+        background-color: rgba(219, 18, 142, 0.8);
+
+        &:hover {
+            color: #46385C;
+            background-color: rgba(238, 108, 188, 0.8);
+        }
+
+        &:active {
+            color: #fff;
+            background-color: rgba(219, 18, 142, 1);
+        }
+    }
+}
+
+.checklist {
+    color: #46385C;
+    background-color: rgba(205, 205, 207, 0.8);
+
+    &:hover {
+        color: #fff;
+        background-color: rgba(81, 82, 82, 0.8);
+    }
+
+    &:active {
+        color: #46385C;
+        background-color: rgba(205, 205, 207, 1);
     }
 }
 </style>

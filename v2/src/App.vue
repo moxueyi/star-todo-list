@@ -14,7 +14,7 @@ const about = ref<HTMLDivElement>();
 type menu = { menu1: string, menu2: string };
 const footer = ref<{ leftMenu: menu, rightMenu: menu }>({
     leftMenu: { menu1: '新增待办', menu2: '修改待办' },
-    rightMenu: { menu1: '完成/重做勾选', menu2: '删除勾选' }
+    rightMenu: { menu1: '设置勾选', menu2: '删除勾选' }
 });
 const changeActive = (path: string) => {
     if (path === '/') {
@@ -84,7 +84,7 @@ watch(() => route.path, (newPath) => {
 .container {
     background-color: rgb(148, 148, 148);
     width: 100dvw;
-    height: 100vh;
+    height: 100dvh;
     background-image: url("./assets/star.jpg");
     background-size: cover;
     overflow: hidden;

@@ -23,10 +23,6 @@ const props = defineProps<{
 .dialog-box :deep(.el-dialog) {
     width: 50dvw;
 
-    @media screen and (min-width: 1268px) {
-        width: 30dvw;
-    }
-
     @media screen and (max-width: 768px) {
         width: 80dvw;
     }

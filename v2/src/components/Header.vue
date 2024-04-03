@@ -21,11 +21,12 @@ const props = defineProps<{
     align-items: center;
     height: 10dvh;
     width: 100dvw;
+    gap: 2dvh;
 
     background-color: rgba(255, 255, 255, 0.3);
     backdrop-filter: blur(3px);
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
-    padding: 0 3dvh 0 3dvh;
+    padding: 0 2dvh 0 2dvh;
 
     .logo {
         display: flex;
@@ -35,7 +36,7 @@ const props = defineProps<{
 
         font-family: "Kranky", serif;
         font-weight: 700;
-        font-size: 3.5dvh;
+        font-size: 3dvh;
         color: #ec74ea;
         width: 100%;
         height: 100%;

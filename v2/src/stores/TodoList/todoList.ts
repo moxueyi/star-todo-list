@@ -4,12 +4,7 @@ import { computed, ref } from "vue";
 import { generateRandomId } from "../utiles/generateID";
 
 export const useTodoList = defineStore('todoList', () => {
-    const todoList = ref<TodoType[]>([
-        { "id": "1711181318393-8xuos", "title": "affffffffffffffffffffffffffffffffagggggggggggg", "completed": false },
-        { "id": "1711181336743-bbf5j", "title": "bb", "completed": true },
-        { "id": "1711181354170-abj0w2", "title": "cc", "completed": false },
-        { "id": "1711181700532-ejakjr", "title": "dd", "completed": true },
-    ]);
+    const todoList = ref<TodoType[]>(JSON.parse(localStorage.getItem('todoList') ?? '[]'));
 
     // 添加一个todo
     function addTodo(title: string) {
@@ -54,6 +49,24 @@ export const useTodoList = defineStore('todoList', () => {
         return todoList.value.filter(todo => !todo.completed);
     })
 
+    function getTitle(id: string): string {
+        todoList.value.forEach(todo => {
+            if (todo.id === id) {
+                return todo.title;
+            }
+        })
+        return '';
+    }
+
+    // 获取所有todo
+    function getTodoList(): TodoType[] {
+        return JSON.parse(JSON.stringify(todoList.value));
+    }
+
+    function isTitleChange(id: string, title: string): boolean {
+        return getTitle(id) === title;
+    }
+
     return {
         todoList,
         addTodo,
@@ -62,5 +75,13 @@ export const useTodoList = defineStore('todoList', () => {
         toggleTodo,
         getCompletedTodos,
         getUncompletedTodos,
+        getTodoList,
+        isTitleChange,
+    }
+}, {
+    persist: {
+        key: 'todoList',
+        storage: localStorage,
+        paths: ['todoList'],
     }
 })

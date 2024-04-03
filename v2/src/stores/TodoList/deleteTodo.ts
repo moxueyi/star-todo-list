@@ -14,6 +14,7 @@ const deleteTodo = (backFunc: Function, id: string, complete: boolean) => {
         .then(() => {
             backFunc(id);
             ElMessage({
+                showClose: true,
                 duration: 5000,
                 type: 'success',
                 message: isCompleted(complete, '任务删除成功，前辈可以尝试一个其他活动哦。', '既然前辈都这么说了，那就不要尝试了。'),
@@ -21,6 +22,7 @@ const deleteTodo = (backFunc: Function, id: string, complete: boolean) => {
         })
         .catch(() => {
             ElMessage({
+                showClose: true,
                 duration: 5000,
                 type: 'info',
                 message: isCompleted(complete, '前辈，有什么顾虑吗，莫非……', '前辈需要帮助的话，可以和我说哦。'),
