@@ -151,8 +151,8 @@ const removeAllChecked = () => {
     })
 }
 
-const changeTodoList = (backFunc: Function, status?: boolean) => {
-    if (status) {
+const changeTodoList = (backFunc: Function, status: boolean | null) => {
+    if (status !== null) {
         todoStore.getTodoList().forEach(item => {
             if (checkedStore.includeID(item.id) && item.completed === status) {
                 backFunc(item.id)
@@ -220,10 +220,10 @@ const changeTodoList = (backFunc: Function, status?: boolean) => {
                 <div class="enter" @click="handleEditTodo">统一提交</div>
             </div>
             <div v-else-if="dialogTitle === props.rightMenu.menu1">
-                <div class="enter" @click="changeTodoList(todoStore.toggleTodo)">混合更改勾选</div>
+                <div class="enter" @click="changeTodoList(todoStore.toggleTodo, null)">混合更改勾选</div>
             </div>
             <div v-else-if="dialogTitle === props.rightMenu.menu2">
-                <div class="enter" @click="changeTodoList(todoStore.deleteTodo)">混合删除勾选</div>
+                <div class="enter" @click="changeTodoList(todoStore.deleteTodo, null)">混合删除勾选</div>
             </div>
         </template>
     </MyDialog>
