@@ -40,7 +40,7 @@ const navigatorTo = (path: string) => {
 
 onMounted(() => {
     changeActive(route.path);
-    console.log(userToken.getToken() === null);
+    // console.log(userToken.getToken() === null);
 
     if (userToken.getToken() !== null) {
         ElMessage({

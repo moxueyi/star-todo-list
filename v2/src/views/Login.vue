@@ -44,7 +44,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         if (valid) {
             console.log('submit!')
             userToken.setToken(ruleForm)
-            console.log(userToken.getToken());
+            // console.log(userToken.getToken());
             router.push({
                 path: '/',
                 replace: true,

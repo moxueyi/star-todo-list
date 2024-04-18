@@ -28,12 +28,15 @@ const router = createRouter({
 
 router.beforeEach((to, _from, next) => {
     // 检查用户是否已登录
-    const isLoggedIn = JSON.parse(localStorage.getItem('token')!)['token'];
+    let isLoggedIn: any = localStorage.getItem('token');
     // console.log(to.path);
     // console.log(isLoggedIn);
-    
-
-    if (!whileList.includes(to.path) || isLoggedIn !== null) {
+    if (isLoggedIn !== null && JSON.parse(isLoggedIn)['token'] !== null) {
+        isLoggedIn = true;
+    } else {
+        isLoggedIn = false;
+    }
+    if (!whileList.includes(to.path) || isLoggedIn) {
         next();
     } else {
         next({
