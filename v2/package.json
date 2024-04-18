@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "bunx --bun vite",
     "build": "vue-tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest"
   },
   "dependencies": {
     "element-plus": "^2.6.2",
@@ -19,9 +20,12 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.4",
+    "@vue/test-utils": "^2.4.5",
+    "jsdom": "^24.0.0",
     "less": "^4.2.0",
     "typescript": "^5.2.2",
     "vite": "^5.2.0",
+    "vitest": "^1.5.0",
     "vue-tsc": "^2.0.6"
   }
 }

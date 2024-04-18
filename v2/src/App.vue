@@ -3,8 +3,10 @@ import { h, onMounted, ref, watch } from 'vue';
 import MyHeader from './components/Header.vue';
 import MyFooter from './components/Footer.vue';
 import { useRoute, useRouter } from 'vue-router';
-// import notifyMe from './stores/utiles/notify';
-import { ElMessage } from 'element-plus'
+import { useUserToken } from './stores';
+import { ElMessage } from 'element-plus';
+
+const userToken = useUserToken();
 
 const router = useRouter();
 const route = useRoute();
@@ -38,12 +40,15 @@ const navigatorTo = (path: string) => {
 
 onMounted(() => {
     changeActive(route.path);
+    console.log(userToken.getToken() === null);
 
-    ElMessage({
-        showClose: true,
-        duration: 5000,
-        message: h('p', { style: 'color: #3949B8; font-size: 2dvb;' }, '你来啦，前辈。'),
-    })
+    if (userToken.getToken() !== null) {
+        ElMessage({
+            showClose: true,
+            duration: 5000,
+            message: h('p', { style: 'color: #3949B8; font-size: 2dvb;' }, `你来啦，${userToken.getToken()!.nikeName}前辈。`),
+        })
+    }
 
 })
 
@@ -69,7 +74,7 @@ watch(() => route.path, (newPath) => {
             <router-view></router-view>
         </main>
 
-        <MyFooter :left-menu="footer.leftMenu" :right-menu="footer.rightMenu">
+        <MyFooter v-if="route.path !== '/login'" :left-menu="footer.leftMenu" :right-menu="footer.rightMenu">
         </MyFooter>
     </div>
 </template>

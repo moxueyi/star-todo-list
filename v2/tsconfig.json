@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
     "types": [
-      "element-plus/global"
+      "element-plus/global",
+      "vitest/globals",
     ],
     "target": "ES2020",
     "useDefineForClassFields": true,

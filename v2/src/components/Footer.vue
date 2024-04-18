@@ -190,12 +190,12 @@ const changeTodoList = (backFunc: Function, status: boolean | null) => {
     <MyDialog v-model:dialog-visible="dialogVisible" :dialog-title="dialogTitle">
         <template #content>
             <div class="dialog-add" v-if="dialogTitle === props.leftMenu.menu1">
-                <el-input v-model="input" style="width: 100%;" placeholder="请输入代办事项" @keydown.enter="handleAddTodo" />
+                <el-input data-test="addTodoInput" v-model="input" style="width: 100%;" placeholder="请输入代办事项" @keydown.enter="handleAddTodo" />
                 <div class="clear" @click="clearInput">清空</div>
             </div>
             <div class="dialog-edit" v-if="dialogTitle === props.leftMenu.menu2">
                 <div class="dialog-edit-item" v-for="item, index in editList" :key="item.id">
-                    <el-input v-model="item.title" style="width: 100%;" placeholder="请输入代办事项"
+                    <el-input data-test="editTodoInput" v-model="item.title" style="width: 100%;" placeholder="请输入代办事项"
                         @keydown.enter="enterEditItem(index, item.id)" />
                     <div class="clear" @click="clearEditItem(index)">清空</div>
                     <div class="enter" @click="enterEditItem(index, item.id)">提交</div>
@@ -208,7 +208,7 @@ const changeTodoList = (backFunc: Function, status: boolean | null) => {
             </div>
             <div class="dialog-todo-delete" v-else-if="dialogTitle === props.rightMenu.menu2">
                 <div class="checklist" @click="removeAllChecked">仅取消勾选不删除项</div>
-                <div @click="changeTodoList(todoStore.deleteTodo, false)">删除Pending中的勾选项</div>
+                <div data-test="deletePanding" @click="changeTodoList(todoStore.deleteTodo, false)">删除Pending中的勾选项</div>
                 <div @click="changeTodoList(todoStore.deleteTodo, true)">删除Completed中的勾选项</div>
             </div>
         </template>
@@ -230,10 +230,10 @@ const changeTodoList = (backFunc: Function, status: boolean | null) => {
     <div class="footer">
         <div class="content">
             <ul class="left-menu">
-                <li @click="openWindow(`${props.leftMenu.menu1}`)">
+                <li data-test="openAddWindow" @click="openWindow(`${props.leftMenu.menu1}`)">
                     {{ props.leftMenu.menu1 }}
                 </li>
-                <li @click="openWindow(`${props.leftMenu.menu2}`)">
+                <li data-test="openEditWindow" @click="openWindow(`${props.leftMenu.menu2}`)">
                     {{ props.leftMenu.menu2 }}
                 </li>
             </ul>
@@ -244,7 +244,7 @@ const changeTodoList = (backFunc: Function, status: boolean | null) => {
                 <li @click="openWindow(`${props.rightMenu.menu1}`)">
                     {{ props.rightMenu.menu1 }}
                 </li>
-                <li @click="openWindow(`${props.rightMenu.menu2}`)">
+                <li data-test="openDeleWindow" @click="openWindow(`${props.rightMenu.menu2}`)">
                     {{ props.rightMenu.menu2 }}
                 </li>
             </ul>

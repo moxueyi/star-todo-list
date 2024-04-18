@@ -1,4 +1,30 @@
 <script setup lang="ts">
+import { useRouter } from 'vue-router';
+import { useUserToken } from '../stores';
+import { ElMessage } from 'element-plus';
+import { h } from 'vue';
+
+const router = useRouter();
+
+const userToken = useUserToken();
+const user = userToken.getToken();
+
+const switchAccount = () => {
+    userToken.removeToken();
+    router.push('/login');
+}
+
+const logoutAccout = () => {
+    router.push('/');
+
+    ElMessage({
+        showClose: true,
+        duration: 5000,
+        message: h('p', { style: 'color: #3949B8; font-size: 2dvb;' }, `已经退出账号：${userToken.getToken()!.nikeName}`),
+    })
+    userToken.removeToken();
+}
+
 
 </script>
 
@@ -6,19 +32,10 @@
     <div class="about">
         <div class="card">
             <div class="avatar"><img src="../assets/moxueyi.png" alt="" srcset=""></div>
-            <div class="name"><span>Nickname:</span>moxueyi</div>
-            <div class="desc">
-                <p>
-                    <span>关于我：</span>一个热爱编程的菜鸟
-                </p>
-                <p>
-                    <span>目前：</span>
-                    正在努力成为一名高级程序员，希望可以和大家一起进步
-                </p>
-                <p><span>This demo：</span>这是一个简单的todo list
-                    demo，以一款名为《卡拉彼丘》射击游戏内的小天使角色——星绘作为主题，游戏特色是可以变成“纸片人”，里面有高手也有萌萌人，不说了，卡丘启动～</p>
-            </div>
-            <div class="links"><a href="https://klbq.qq.com/web202305/index.html?nav=world" target="_blank">《卡拉彼丘》官网</a>
+            <div class="name"><span>Nickname: </span>{{ user?.nikeName }}</div>
+            <div class="button">
+                <div class="switch-account" @click="switchAccount">切换用户</div>
+                <div class="logout" @click="logoutAccout">退出登陆</div>
             </div>
         </div>
     </div>
@@ -96,28 +113,38 @@
     }
 }
 
-.desc {
-    margin: 0 3dvh 0 3dvh;
-    cursor: text;
+.button {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 2dvh;
 
-    span {
-        font-weight: 700;
+    .switch-account,
+    .logout {
+        padding: 1dvh 2dvh;
+        border-radius: 5dvh;
+        backdrop-filter: blur(6px);
+        transition: background-color 0.2s ease-in-out;
+        user-select: none;
+        cursor: pointer;
     }
 
-    p {
-        letter-spacing: 0.1em;
-    }
-}
+    .switch-account {
+        background-color: #fefcd6;
 
-.links a {
-    color: #be4fe0;
-    text-decoration: none;
-    font-weight: 700;
-
-    &:hover {
-        color: #8000ff;
+        &:hover {
+            background-color: #fff0b3;
+        }
     }
 
-    border-bottom: 1px solid #000000;
+    .logout {
+        background-color: #ff85cc;
+
+
+        &:hover {
+            background-color: #ff66b3;
+        }
+    }
 }
 </style>

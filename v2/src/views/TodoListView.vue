@@ -4,7 +4,6 @@ import { useTodoList, useCheckedList } from '../stores';
 import deleteTodo from '../stores/TodoList/deleteTodo'
 import toggleTodo from '../stores/TodoList/toggleTodo'
 
-
 const todoStore = useTodoList();
 const checkedStore = useCheckedList();
 
